@@ -1,4 +1,3 @@
-/// <reference types="bunyan" />
 /// <reference types="node" />
 import { PubSubEngine } from 'graphql-subscriptions';
 import * as Logger from 'bunyan';
@@ -32,7 +31,8 @@ export declare class KafkaPubSub implements PubSubEngine {
     subscribe(channel: string, onMessage: Function, options?: Object): Promise<number>;
     unsubscribe(index: number): void;
     asyncIterator<T>(triggers: string | string[]): AsyncIterator<T>;
-    private onMessage(channel, message);
-    private createProducer(topic);
-    private createConsumer(topic);
+    private onMessage;
+    brokerList(): any;
+    private createProducer;
+    private createConsumer;
 }
