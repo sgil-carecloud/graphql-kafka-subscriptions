@@ -2122,9 +2122,9 @@ node-pre-gyp@^0.10.0:
     semver "^5.3.0"
     tar "^4"
 
-node-rdkafka@^2.1.0:
-  version "2.3.4"
-  resolved "https://registry.yarnpkg.com/node-rdkafka/-/node-rdkafka-2.3.4.tgz#e940c0edb3ed43725bab84fd25257c88204cb91e"
+node-rdkafka@2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/node-rdkafka/-/node-rdkafka-2.2.3.tgz#05d8cafdbaf27bf1e8ef2b8e5bf39afb59a2e701"
   dependencies:
     bindings "1.x"
     nan "2.x"
