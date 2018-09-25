@@ -18,6 +18,7 @@ export interface IKafkaTopic {
 export declare class KafkaPubSub implements PubSubEngine {
     protected producer: any;
     protected consumer: any;
+    protected topics: any;
     protected options: any;
     protected subscriptionMap: {
         [subId: number]: [string, Function];

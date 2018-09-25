@@ -30,6 +30,7 @@ const defaultLogger = Logger.createLogger({
 export class KafkaPubSub implements PubSubEngine {
   protected producer: any
   protected consumer: any
+  protected topics: any
   protected options: any
   protected subscriptionMap: { [subId: number]: [string, Function] }
   protected channelSubscriptions: { [channel: string]: Array<number> }
@@ -39,7 +40,8 @@ export class KafkaPubSub implements PubSubEngine {
     this.options = options
     this.subscriptionMap = {}
     this.channelSubscriptions = {}
-    this.consumer = this.createConsumer(this.options.topic)
+    this.topics = this.options.topics || [];
+    this.consumer = this.createConsumer()
     this.logger = createChildLogger(
       this.options.logger || defaultLogger, 'KafkaPubSub')
   }
@@ -86,7 +88,7 @@ export class KafkaPubSub implements PubSubEngine {
   }
 
   private createProducer(topic: string) {
-    const producer = Kafka.Producer.createWriteStream({
+    const producer = Kafka.createWriteStream({
       'metadata.broker.list': this.brokerList()
     }, {}, { topic })
     producer.on('error', (err) => {
@@ -95,14 +97,14 @@ export class KafkaPubSub implements PubSubEngine {
     return producer
   }
 
-  private createConsumer(topic: string) {
+  private createConsumer() {
     // Create a group for each instance. The consumer will receive all messages from the topic
     const groupId = this.options.groupId || Math.ceil(Math.random() * 9999)
-    const consumer = Kafka.KafkaConsumer.createReadStream({
+    const consumer = Kafka.createReadStream({
       'group.id': `kafka-group-${groupId}`,
       'metadata.broker.list': this.brokerList(),
     }, {}, {
-      topics: [topic]
+      topics: this.topics
     })
     consumer.on('data', (message: any) => {
       let parsedMessage = JSON.parse(message.value.toString())
@@ -114,7 +116,7 @@ export class KafkaPubSub implements PubSubEngine {
 
       // No channel abstraction, publish over the whole topic
       } else {
-        this.onMessage(topic, parsedMessage)
+        this.onMessage(message.topic, parsedMessage)
       }
     })
     return consumer

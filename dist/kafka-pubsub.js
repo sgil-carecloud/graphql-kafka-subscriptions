@@ -23,7 +23,8 @@ var KafkaPubSub = (function () {
         this.options = options;
         this.subscriptionMap = {};
         this.channelSubscriptions = {};
-        this.consumer = this.createConsumer(this.options.topic);
+        this.topics = this.options.topics || [];
+        this.consumer = this.createConsumer();
         this.logger = child_logger_1.createChildLogger(this.options.logger || defaultLogger, 'KafkaPubSub');
     }
     KafkaPubSub.prototype.publish = function (payload) {
@@ -61,7 +62,7 @@ var KafkaPubSub = (function () {
     };
     KafkaPubSub.prototype.createProducer = function (topic) {
         var _this = this;
-        var producer = Kafka.Producer.createWriteStream({
+        var producer = Kafka.createWriteStream({
             'metadata.broker.list': this.brokerList()
         }, {}, { topic: topic });
         producer.on('error', function (err) {
@@ -69,14 +70,14 @@ var KafkaPubSub = (function () {
         });
         return producer;
     };
-    KafkaPubSub.prototype.createConsumer = function (topic) {
+    KafkaPubSub.prototype.createConsumer = function () {
         var _this = this;
         var groupId = this.options.groupId || Math.ceil(Math.random() * 9999);
-        var consumer = Kafka.KafkaConsumer.createReadStream({
+        var consumer = Kafka.createReadStream({
             'group.id': "kafka-group-" + groupId,
             'metadata.broker.list': this.brokerList(),
         }, {}, {
-            topics: [topic]
+            topics: this.topics
         });
         consumer.on('data', function (message) {
             var parsedMessage = JSON.parse(message.value.toString());
@@ -85,7 +86,7 @@ var KafkaPubSub = (function () {
                 _this.onMessage(parsedMessage.channel, payload);
             }
             else {
-                _this.onMessage(topic, parsedMessage);
+                _this.onMessage(message.topic, parsedMessage);
             }
         });
         return consumer;

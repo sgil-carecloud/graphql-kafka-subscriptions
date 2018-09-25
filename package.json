@@ -1,6 +1,6 @@
 {
   "name": "@carecloud/graphql-kafka-subscriptions",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Apollo graphql subscription over Kafka protocol",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
